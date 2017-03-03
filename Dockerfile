@@ -1,4 +1,4 @@
-FROM node:7-alpine
+FROM node:7.7.1-alpine
 
 MAINTAINER Can Kutlu Kinay <me@ckk.im>
 
