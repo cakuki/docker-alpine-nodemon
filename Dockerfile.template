@@ -1,25 +1,24 @@
-FROM node:7.7.1-alpine
+FROM node:__NODE_VERSION__-alpine
 
-MAINTAINER Can Kutlu Kinay <me@ckk.im>
+LABEL name="alpine-nodemon" version="__VERSION__" maintainer="me@ckk.im"
 
 WORKDIR /app
-VOLUME /app/src
 
-RUN npm install -g nodemon
+RUN npm install -g nodemon@__VERSION__
 
 RUN BUILD_TOOLS="make gcc git g++ openssh-client python" && \
-    info(){ printf '\n  ==> %s...\n' "$*"; } && \
     # Enable node-gyp builds
-    info 'Installing build tools' && \
     apk add --no-cache $BUILD_TOOLS && \
-    info 'Configuring ssh' && \
     mkdir -m 700 -p ~/.ssh && \
     # This allows install from all hosts
     echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
-ONBUILD ARG SSH_PRIVATE_KEY="none"
+ONBUILD ARG SSH_PRIVATE_KEY=""
 ONBUILD ARG NPM_REGISTRY="https://registry.npmjs.org/"
 ONBUILD COPY package.json yarn.lock* /app/
+
+ONBUILD ENV NODE_ENV development
+ONBUILD ENV NPM_CONFIG_LOGLEVEL warn
 
 ONBUILD RUN info(){ printf '\n  ==> %s...\n' "$*"; } && \
     info 'Adding ssh key' && \
